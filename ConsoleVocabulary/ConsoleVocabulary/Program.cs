@@ -1,13 +1,9 @@
-﻿using ConsoleVocabulary.Model;
-using SQLite;
-using SQLiteNetExtensions;
-using SQLiteNetExtensions.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Learning.Model;
+using SQLite;
+using SQLiteNetExtensions.Extensions;
 
 namespace Vocabulary
 {
