@@ -79,7 +79,7 @@ namespace Learning
 
         public Category UpdateCategoryUsage(int categoryId, DateTime datetime)
         {
-            Connection.Execute("UPDATE Categories SET LastUse=? WHERE Id=?", (datetime, categoryId));
+            Connection.Execute("UPDATE Categories SET LastUse=? WHERE Id=?", datetime, categoryId);
             return GetCategory(categoryId);
         }
 

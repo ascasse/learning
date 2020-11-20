@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Learning
 {
-    class Service
+    public class Service
     {
         private DBWords Database { get; set; }
         /// <summary>Max number of recently viewed categories to return.</summary>
@@ -48,6 +48,7 @@ namespace Learning
         /// <summary>
         /// Updates view info of given words.
         /// </summary>
+        /// A batch is just a subset of a category
         /// For each word increases views by one and set lastUse date as today.
         /// Updates category lastUse to today.
         /// <param name="category"></param>
@@ -62,11 +63,8 @@ namespace Learning
             }
             batch.LastUse = currentDate;
             Database.UpdateWords(batch.Words);
-            
-
-
-            return null;
-
+            Database.UpdateCategoryUsage(batch.Id, currentDate);
+            return batch;
         }
 
 
