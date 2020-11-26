@@ -50,7 +50,7 @@ namespace Learning.Tests
         [Test()]
         public void LoadFromCsvFileTest()
         {
-            db.LoadFromCsvFile("../../../categories.csv");
+            db.LoadFromCsvFile(@".\TestData\categories.csv");
             List<Category> categories = db.Connection.GetAllWithChildren<Category>();
 
             Assert.IsTrue(categories.Count == 13);
@@ -153,12 +153,6 @@ namespace Learning.Tests
             {
                 Assert.AreEqual(1, word.Views);
             }
-        }
-
-        [Test()]
-        public void UpdateCategoryUsageTest()
-        {
-            Assert.Fail();
         }
     }
 }

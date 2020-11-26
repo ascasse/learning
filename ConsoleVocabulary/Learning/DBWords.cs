@@ -1,8 +1,10 @@
-﻿using Learning.Model;
+﻿using CsvHelper;
+using Learning.Model;
 using SQLite;
 using SQLiteNetExtensions.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -83,9 +85,9 @@ namespace Learning
             return GetCategory(categoryId);
         }
 
-        public void DeleteCategory(int id)
+        public int DeleteCategory(int id)
         {
-            Connection.Delete<Category>(id);
+            return Connection.Delete<Category>(id);
         }
 
         public void UpdateWords(List<Word>words)
@@ -108,10 +110,17 @@ namespace Learning
                 Words = new List<Word>()
             };
             foreach (var part in parts.Skip<string>(1))
-            {
                 category.Words.Add(new Word() { Text = part });
-            }
+
             return category;
+        }
+
+        public List<Category> GetRecent(int days, int count)
+        {
+            string recent_day = DateTime.Now.AddDays(-days).ToString("yyyy-MM-dd");
+            string sql = $"SELECT * FROM Categories WHERE lastUse > '{ recent_day }' OR lastUse = 0 ORDER BY lastUSE DESC LIMIT { count }";
+            List<Category> recent = Connection.Query<Category>(sql);
+            return recent;
         }
 
         public void LoadFromCsvFile(string path)
@@ -126,12 +135,25 @@ namespace Learning
         private IEnumerable<string> ImportCsv(string path)
         {
             using (StreamReader sr = new StreamReader(path))
-            {
                 while (!sr.EndOfStream)
-                {
                     yield return sr.ReadLine();
+        }
+
+        public int LoadCsv(string path)
+        {
+            List<Category> categories = new List<Category>();
+            using (TextReader reader = File.OpenText(path))
+            {
+                CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+                csv.Configuration.Delimiter = ";";
+                csv.Configuration.MissingFieldFound = null;
+                while (csv.Read())
+                {
+                    Category category = csv.GetRecord<Category>();
+                    categories.Add(category);
                 }
             }
+            return Connection.InsertAll(categories);
         }
     }
 }

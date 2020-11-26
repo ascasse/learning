@@ -1,6 +1,7 @@
 ﻿using Learning.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Learning
@@ -25,6 +26,7 @@ namespace Learning
         {
             Database = new DBWords(connectionString);
         }
+
         public List<Category> GetCategories()
         {
             return Database.GetCategories();
@@ -33,6 +35,11 @@ namespace Learning
         public Category GetCategory(int id)
         {
             return Database.GetCategory(id);
+        }
+
+        public Category GetFullCategory(int id)
+        {
+            return Database.GetFullCategory(id);
         }
 
         public int CreateCategory(Category newCategory)
@@ -49,8 +56,8 @@ namespace Learning
         /// Updates view info of given words.
         /// </summary>
         /// A batch is just a subset of a category
-        /// For each word increases views by one and set lastUse date as today.
-        /// Updates category lastUse to today.
+        /// For each word, increase views by one and set lastUse date as today.
+        /// Update category lastUse to today.
         /// <param name="category"></param>
         /// <returns></returns>
         public Category UpdateBatch(Category batch)
@@ -67,8 +74,72 @@ namespace Learning
             return batch;
         }
 
+        public int DeleteCategory(int categoryId)
+        {
+            return Database.DeleteCategory(categoryId);
+        }
 
+        public List<Category> GetRecent()
+        {
+            return Database.GetRecent(RecentDays, RecentCount);
+        }
 
+        public Category BuildBatchFromCategory(int category_id)
+        {
+            Category category = GetCategory(category_id);
+            return BuildBatchFromCategory(category);
+        }
 
+        public Category BuildBatchFromCategory(Category category)
+        {
+            if (category.Words == null)
+                return category;
+
+            Category batch = new Category()
+            {
+                Id = category.Id,
+                Name = category.Name
+            };
+
+            // Look for elements viewed fewer times than the max.
+            var to_view = category.Words.Where(word => word.Views < MaxViews);
+
+            // All elements have reached the max number of views. Return an empty batch
+            if (to_view.Count() == 0)
+                return batch;
+
+            // Category has less or equal number of elements than batch size. 
+            // The batch will be the category itself. Nothing to do.
+            if (category.Words.Count <= BatchSize)
+                return category;
+
+            var sorted_words = category.Words.OrderByDescending(word => word.Views).ThenByDescending(word => word.LastUse);
+
+            // If no element has reached max_views, take the first BatchSize elements
+            if (sorted_words.First().Views < MaxViews)
+            {
+                batch.Words = sorted_words.Take(BatchSize).ToList();
+                return batch;
+            }
+
+            // There are elements with different Views value
+            if (to_view.Count() <= RefreshRate)
+                batch.Words = sorted_words.Skip(Math.Max(0, sorted_words.Count() - BatchSize)).ToList();
+            else
+                batch.Words = sorted_words.Skip(Math.Max(0, sorted_words.Count() - to_view.Count() - (BatchSize - RefreshRate))).Take(BatchSize).ToList();
+
+            //var words = sorted_words.Where(w => w.Views < MaxViews);
+            //if (words.Count() >= BatchSize)
+            //    batch.Words = words.Take(BatchSize).ToList();
+            //else
+            //    batch.Words = words.Skip(Math.Max(0, words.Count() - BatchSize)).ToList();
+
+            return batch;
+        }
+
+        public void LoadFromFile(string path)
+        {
+            Database.LoadFromCsvFile(path);
+        }
     }
 }

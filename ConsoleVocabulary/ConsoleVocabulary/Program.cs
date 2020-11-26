@@ -47,13 +47,11 @@ namespace Vocabulary
 
             Console.WriteLine("Reading data");
             var category = db.GetWithChildren<Category>(newCategory.Id);
-            Console.WriteLine(string.Format("Category {0}, {1}", category.Id, category.Name));
+            Console.WriteLine($"Category {category.Id}, {category.Name}");
             foreach (Word word in category.Words)
-            {
-                Console.WriteLine(string.Format("Word {0}, {1}, {2}", word.Id, word.Text, word.LastUse));
-            }
+                Console.WriteLine($"Word { word.Id }, {word.Text }, {word.LastUse }");
 
-            Console.ReadKey();
+            Console.ReadLine();
         }
     }
 }
