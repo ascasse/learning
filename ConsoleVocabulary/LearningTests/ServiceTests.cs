@@ -56,13 +56,8 @@ namespace Learning.Tests
         [Test()]
         public void GetRecentTest()
         {
-            //List<Category> all = service.GetCategories();
             List<Category> recent = service.GetRecent();
-            Assert.AreEqual(service.RecentCount, recent.Count);
-
-            //var batches = recent.Select(c => service.BuildBatchFromCategory(c));
-            //Assert.AreEqual(service.RecentCount, batches.Count());
-
+            Assert.True(service.RecentCount >= recent.Count);
         }
 
         [Test()]
@@ -95,27 +90,35 @@ namespace Learning.Tests
             Assert.AreEqual(2, views.ElementAt(0));
             Assert.False(views.Any(o => o != views.ElementAt(0)));
 
-            // Third pass
+            // Third pass. Reached MaxViews
             Category batch3 = service.BuildBatchFromCategory(ctg);
             Assert.IsNotNull(batch3);
             Assert.AreEqual(service.BatchSize, batch3.Words.Count);
 
-            // Both batches should have the same words.
+            // There should be RefreshRate new words.
             var words3 = batch3.Words.Select(w => w.Id);
-            Assert.IsFalse(words2.Except(words3).Any());
+            Assert.AreEqual(service.RefreshRate, words2.Except(words3).Count());
+        }
 
-            batch3 = service.UpdateBatch(batch3);
-            views = batch3.Words.Select(w => w.Views);
-            Assert.AreEqual(3, views.ElementAt(0));
-            Assert.False(views.Any(o => o != views.ElementAt(0)));
+        [Test()]
+        public void All_elements_viewed_at_least_MaxViews_times()
+        {
+            Category ctg = service.GetFullCategory(1);
 
+            Category batch = service.BuildBatchFromCategory(ctg);
+            while (batch.Words != null)
+            {
+                var words = batch.Words.Select(w => w.Id);
+                TestContext.WriteLine(string.Join(",", words));
+                service.UpdateBatch(batch);
+                batch = service.BuildBatchFromCategory(ctg);
+            }
+            TestContext.WriteLine($"Completed");
+            ctg = service.GetFullCategory(1);
+            var views = ctg.Words.Select(w => w.Views);
+            TestContext.WriteLine($"Views: { string.Join(",", views) }.");
 
-
-
-
-
-
-
+            Assert.IsFalse(views.Where(v => v < service.MaxViews).Any());
         }
     }
 }
