@@ -1,10 +1,7 @@
-﻿using Plugin.Permissions;
-using Plugin.Permissions.Abstractions;
-using System;
+﻿using System;
 using System.ComponentModel;
-using System.IO;
-using System.Threading.Tasks;
 using Xamarin.Forms;
+using Xamarin.Essentials;
 
 namespace LocalDatabaseTutorial
 {
@@ -21,18 +18,9 @@ namespace LocalDatabaseTutorial
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await CheckPermissions();
-            listView.ItemsSource = await App.Database.GetPeopleAsync();
-        }
+            await Permissions.RequestAsync<Permissions.StorageWrite>();
 
-        async Task<bool> CheckPermissions()
-        {
-            var status = await CrossPermissions.Current.CheckPermissionStatusAsync<StoragePermission>();
-            if (status != PermissionStatus.Granted)
-            {
-                status = await Utils.CheckPermissions(new StoragePermission());
-            }
-            return status == PermissionStatus.Granted;
+            listView.ItemsSource = await App.Database.GetPeopleAsync();
         }
 
         async void OnButtonClicked(object sender, EventArgs e)
