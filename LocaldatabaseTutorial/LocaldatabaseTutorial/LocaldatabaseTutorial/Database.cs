@@ -24,7 +24,5 @@ namespace LocalDatabaseTutorial
         {
             return connection.InsertAsync(person);
         }
-
-
     }
 }

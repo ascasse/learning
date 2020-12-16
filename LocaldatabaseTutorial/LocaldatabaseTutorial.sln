@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocaldatabaseTutorial.Android", "LocaldatabaseTutorial\LocaldatabaseTutorial.Android\LocaldatabaseTutorial.Android.csproj", "{7ABB6DB4-B4A8-487A-AE39-2E51D45ABD36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocaldatabaseTutorial", "LocaldatabaseTutorial\LocaldatabaseTutorial\LocaldatabaseTutorial.csproj", "{97881D00-70EE-4923-AF40-1F06D6BC63EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocaldatabaseTutorial", "LocaldatabaseTutorial\LocaldatabaseTutorial\LocaldatabaseTutorial.csproj", "{97881D00-70EE-4923-AF40-1F06D6BC63EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

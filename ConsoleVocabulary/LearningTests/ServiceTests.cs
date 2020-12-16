@@ -56,14 +56,14 @@ namespace Learning.Tests
         [Test()]
         public void GetRecentTest()
         {
-            List<Category> recent = service.GetRecent();
+            List<Category> recent = service.GetRecent().Result;
             Assert.True(service.RecentCount >= recent.Count);
         }
 
         [Test()]
         public void BuildBatchFromCategoryTest()
         {
-            Category ctg = service.GetFullCategory(1);
+            Category ctg = service.GetCategory(1).Result;
             Assert.IsNotNull(ctg);
 
             Category batch1 = service.BuildBatchFromCategory(ctg);
@@ -103,7 +103,7 @@ namespace Learning.Tests
         [Test()]
         public void All_elements_viewed_at_least_MaxViews_times()
         {
-            Category ctg = service.GetFullCategory(1);
+            Category ctg = service.GetCategory(1).Result;
 
             Category batch = service.BuildBatchFromCategory(ctg);
             while (batch.Words != null)
@@ -114,7 +114,7 @@ namespace Learning.Tests
                 batch = service.BuildBatchFromCategory(ctg);
             }
             TestContext.WriteLine($"Completed");
-            ctg = service.GetFullCategory(1);
+            ctg = service.GetCategory(1).Result;
             var views = ctg.Words.Select(w => w.Views);
             TestContext.WriteLine($"Views: { string.Join(",", views) }.");
 

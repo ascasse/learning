@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Learning;
 using Learning.Model;
 using SQLite;
@@ -11,17 +12,25 @@ namespace Vocabulary
 {
     class Program
     {
-        static void Main(string[] args)
+        public static async Task Main()
         {
 
-            Service service = new Service(":memory:");
-            service.BatchSize = 5;
-            service.MaxViews = 2;
-            service.RefreshRate = 3;
-            service.LoadFromFile(@".\Data\categories.csv");
+            Service service = new Service(":memory:")
+            {
+                BatchSize = 5,
+                MaxViews = 2,
+                RefreshRate = 3
+            };
 
-            Category ctg = service.GetFullCategory(1);
+            await service.LoadFromFile(@".\Data\categories.csv");
 
+            Category ctg = service.GetCategory(1).Result;
+            Console.WriteLine($"Category {ctg.Name}.");
+            Console.WriteLine($"{ctg.Words.Count} words in category.");
+            foreach(Word w in ctg.Words)
+            {
+                Console.WriteLine(w.Text);
+            }
             int iteration = 0;
             while (iteration < 10)
             {
@@ -34,51 +43,10 @@ namespace Vocabulary
                 service.UpdateBatch(batch);
             }
             Console.WriteLine($"Completed");
-            ctg = service.GetFullCategory(1);
+            ctg = service.GetCategory(1).Result;
             var views = ctg.Words.Select(w => w.Views);
             Console.WriteLine(string.Join(",", views));
-
-
-
-            //Console.WriteLine("Creating database, if it doesn't already exist");
-            //string dbPath = Path.Combine(
-            //     Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-            //     "Vocabulary.db3");
-
-            //var db = new SQLiteConnection(dbPath);
-
-            //db.DropTable<Category>();
-            //db.DropTable<Word>();
-            //db.CreateTable<Category>();
-            //db.CreateTable<Word>();
-
-            //List<Word> words = new List<Word>() { new Word
-            //{
-            //    Text = "Eggs",
-            //    LastUse = DateTime.Today
-            //},
-            //new Word
-            //{
-            //    Text = "Pizza",
-            //    LastUse = DateTime.Today
-            //}};
-
-            //var newCategory = new Category
-            //{
-            //    Name = "Food",
-            //    LastUse = DateTime.Today,
-            //};
-
-            //db.Insert(newCategory);
-            //db.InsertAll(words);
-            //newCategory.Words = words;
-            //db.UpdateWithChildren(newCategory);
-
-            //Console.WriteLine("Reading data");
-            //var category = db.GetWithChildren<Category>(newCategory.Id);
-            //Console.WriteLine($"Category {category.Id}, {category.Name}");
-            //foreach (Word word in category.Words)
-            //    Console.WriteLine($"Word { word.Id }, {word.Text }, {word.LastUse }");
+            await service.Close();
 
             Console.ReadLine();
         }

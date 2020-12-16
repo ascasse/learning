@@ -1,12 +1,11 @@
 ﻿using NUnit.Framework;
-using Learning;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using SQLite;
 using System.Linq;
 using Learning.Model;
-using SQLiteNetExtensions.Extensions;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Learning.Tests
 {
@@ -14,85 +13,140 @@ namespace Learning.Tests
     public class DBWordsTests
     {
         DBWords db;
+        Category testCategory;
 
         [SetUp]
-        public void SetUpBeforeTest()
+        public void SetUp()
         {
             db = new DBWords(":memory:");
+
+            // Test category
+            testCategory = db.LoadFromString("Food,Pizza,Ham,Eggs");
+            testCategory.LastUse = DateTime.Now.Date;
+            testCategory.Words.Select(w => w.LastUse = DateTime.Now.Date).ToList();
+            testCategory.Words.Select(w => w.Views = 1).ToList();
         }
+
 
         [Test()]
         public void CheckDatabaseTest()
         {
-            Assert.IsTrue(TableExists(db.Connection, "Categories"));
-            Assert.IsTrue(TableExists(db.Connection, "Words"));
+            Assert.IsTrue(TableExists(db.Connection, "Categories").Result);
+            Assert.IsTrue(TableExists(db.Connection, "Words").Result);
         }
 
         [Test()]
         public void Get_Category_Test()
         {
-            db.CreateCategory(db.LoadFromString("Food,Pizza,Ham,Eggs"));
+            Category ctg = GetTestCategory().Result;
 
-            Category category = db.GetCategory(1);
-            Assert.IsNotNull(category);
-            Assert.AreEqual("Food", category.Name);
+            Assert.IsNotNull(ctg);
+            Assert.AreEqual(1, ctg.Id);
+            Assert.AreEqual(DateTime.Now.Date, ctg.LastUse);
+            Assert.AreEqual(3, ctg.Words.Count);
+
+            Assert.AreEqual("Pizza", testCategory.Words[0].Text);
+            Assert.AreEqual("Ham", testCategory.Words[1].Text);
+            Assert.AreEqual("Eggs", testCategory.Words[2].Text);
+            foreach (Word w in ctg.Words)
+            {
+                Assert.AreEqual(DateTime.Now.Date, w.LastUse);
+                Assert.AreEqual(1, w.Views);
+            }
         }
 
         [Test()]
-        public void Get_Category_Not_Found_Test()
+        public async Task Get_Category_Not_Found_Test()
         {
-            db.CreateCategory(db.LoadFromString("Food,Pizza,Ham,Eggs"));
-
-            Category category = db.GetCategory(33);
-            Assert.IsNull(category);
+            var ctg = await db.GetCategory(33);
+            Assert.IsNull(ctg);
         }
 
+        //[Test()]
+        //public void LoadFromCsvFileTest()
+        //{
+        //    db.LoadFromCsvFile(@".\TestData\categories.csv");
+        //    List<Category> categories = db.Connection.Table<Category>().ToListAsync().Result;
+
+        //    Assert.GreaterOrEqual(13, categories.Count);
+        //}
+
         [Test()]
-        public void LoadFromCsvFileTest()
+        public async Task Update_Category_Words_Test()
         {
-            db.LoadFromCsvFile(@".\TestData\categories.csv");
-            List<Category> categories = db.Connection.GetAllWithChildren<Category>();
+            await db.Connection.DeleteAllAsync<Word>(); 
 
-            Assert.IsTrue(categories.Count == 13);
-        }
-
-        [Test()]
-        public void Update_Category_Words_Test()
-        {
-            db.CreateCategory(db.LoadFromString("Food,Pizza,Ham,Eggs"));
-
-            Category category = db.GetFullCategory(1);
-            category.Words.Remove(category.Words.Single<Word>(x => x.Text.Equals("Ham")));
+            Category category = GetTestCategory().Result;
+            category.Words.RemoveAll(x => x.Text.Equals("Ham"));
             category.Words.Add(new Word() { Text = "Pasta" });
 
-            Category updatedCategory = db.UpdateCategory(category);
-
+            Category updatedCategory = db.UpdateCategory(category).Result;
             Assert.IsNotNull(updatedCategory);
             Assert.AreEqual(3, updatedCategory.Words.Count);
         }
 
         [Test()]
-        public void Update_Category_Test()
+        public async Task Update_Category_LastUse_Test()
         {
-            db.CreateCategory(db.LoadFromString("Food,Pizza,Ham,Eggs"));
+            await db.Connection.DeleteAllAsync<Word>(); 
 
-            Category category = db.GetFullCategory(1);
+            Category category = GetTestCategory().Result;
+            Assert.IsNotNull(category);
             category.LastUse = DateTime.Today;
 
-            Category updatedCategory = db.UpdateCategory(category);
+            Category updatedCategory = db.UpdateCategory(category).Result;
 
             Assert.IsNotNull(updatedCategory);
             Assert.AreEqual(DateTime.Today, updatedCategory.LastUse);
         }
 
-
-        private bool TableExists(SQLiteConnection connection, string tableName)
+        [Test()]
+        public async Task Update_Words_View_Test()
         {
-            SQLiteCommand command = new SQLiteCommand(connection)
+            await db.Connection.DeleteAllAsync<Word>();
+
+            Category category = GetTestCategory().Result;
+            foreach (var word in category.Words)
             {
-                CommandText = string.Format("SELECT name FROM sqlite_master WHERE type = 'table' AND name = '{0}'", tableName)
-            };
-            List<string> tables = command.ExecuteQueryScalars<string>().ToList();
+                word.Views += 1;
+                word.LastUse = DateTime.Now.Date;
+            }
+            int updated = db.UpdateWords(category.Words).Result;
+
+            Assert.AreEqual(3, updated);
+
+            category = db.GetCategory(category.Id).Result;
+            foreach (var word in category.Words)
+            {
+                Assert.AreEqual(2, word.Views);
+            }
+        }
+
+        #region Utility methods
+        private async Task<Category> GetTestCategory()
+        {
+            int id = await db.CreateCategory(testCategory);
+            Category ctg = await db.GetCategory(id);
+            Debug.WriteLine($"Category id: { ctg.Id}");
+            return ctg;
+        }
+
+        private async Task<Category> GetTestCategory(string name)
+        {
+            testCategory.Name = name;
+            int id = await db.CreateCategory(testCategory);
+            Category ctg = await db.GetCategory(id);
+            Debug.WriteLine($"Category id: { ctg.Id}");
+            return ctg;
+        }
+
+
+        private async Task<bool> TableExists(SQLiteAsyncConnection connection, string tableName)
+        {
+            //string query = $"SELECT name FROM sqlite_master WHERE type = 'table' AND name = '{ tableName }'";
+            List<string> tables =
+                await connection.QueryScalarsAsync<string>(
+                    "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?", new object[] { tableName });
             return tables.Count > 0;
         }
 
@@ -115,10 +169,10 @@ namespace Learning.Tests
                 LastUse = DateTime.Today,
             };
 
-            db.Connection.Insert(newCategory);
-            db.Connection.InsertAll(words);
+            db.Connection.InsertAsync(newCategory);
+            db.Connection.InsertAllAsync(words);
             newCategory.Words = words;
-            db.Connection.UpdateWithChildren(newCategory);
+            db.UpdateCategory(newCategory);
         }
 
         private Category LoadFromCsv(string csv)
@@ -136,23 +190,6 @@ namespace Learning.Tests
             return category;
         }
 
-        [Test()]
-        public void Update_Words_View_Test()
-        {
-            db.CreateCategory(db.LoadFromString("Food,Pizza,Ham,Eggs"));
-            Category category = db.GetFullCategory(1);
-            foreach (var word in category.Words)
-            {
-                word.Views += 1;
-                word.LastUse = DateTime.Now;
-            }
-            db.UpdateWords(category.Words);
-
-            category = db.GetFullCategory(1);
-            foreach (var word in category.Words)
-            {
-                Assert.AreEqual(1, word.Views);
-            }
-        }
+        #endregion
     }
 }

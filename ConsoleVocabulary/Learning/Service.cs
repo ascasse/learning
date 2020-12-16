@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Threading.Tasks;
 
 namespace Learning
 {
@@ -27,29 +27,24 @@ namespace Learning
             Database = new DBWords(connectionString);
         }
 
-        public List<Category> GetCategories()
+        public async Task<List<Category>> GetCategories()
         {
-            return Database.GetCategories();
+            return await Database.GetCategories();
         }
 
-        public Category GetCategory(int id)
+        public async Task<Category> GetCategory(int id)
         {
-            return Database.GetCategory(id);
+            return await Database.GetCategory(id);
         }
 
-        public Category GetFullCategory(int id)
+        public async Task<int> CreateCategory(Category newCategory)
         {
-            return Database.GetFullCategory(id);
+            return await Database.CreateCategory(newCategory);
         }
 
-        public int CreateCategory(Category newCategory)
+        public async Task<Category> UpdateCategory(Category category)
         {
-            return Database.CreateCategory(newCategory);
-        }
-
-        public Category UpdateCategory(Category category)
-        {
-            return Database.UpdateCategory(category);
+            return await Database.UpdateCategory(category);
         }
 
         /// <summary>
@@ -74,19 +69,19 @@ namespace Learning
             return batch;
         }
 
-        public int DeleteCategory(int categoryId)
+        public async Task<int> DeleteCategory(int categoryId)
         {
-            return Database.DeleteCategory(categoryId);
+            return await Database.DeleteCategory(categoryId);
         }
 
-        public List<Category> GetRecent()
+        public async Task<List<Category>> GetRecent()
         {
-            return Database.GetRecent(RecentDays, RecentCount);
+            return await Database.GetRecent(RecentDays, RecentCount);
         }
 
-        public Category BuildBatchFromCategory(int category_id)
+        public async Task<Category> BuildBatchFromCategory(int category_id)
         {
-            Category category = GetCategory(category_id);
+            var category = await GetCategory(category_id);
             return BuildBatchFromCategory(category);
         }
 
@@ -130,9 +125,15 @@ namespace Learning
             return batch;
         }
 
-        public void LoadFromFile(string path)
+        public async Task LoadFromFile(string path)
         {
-            Database.LoadFromCsvFile(path);
+            await Database.LoadFromCsvFile(path);
+        }
+
+        public async Task Close()
+        {
+            Database.DropTables();
+            await Database.Connection.CloseAsync();
         }
     }
 }
