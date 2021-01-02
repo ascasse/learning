@@ -55,7 +55,7 @@ namespace Learning
         /// Update category lastUse to today.
         /// <param name="category"></param>
         /// <returns></returns>
-        public Category UpdateBatch(Category batch)
+        public async Task<Category> UpdateBatch(Category batch)
         {
             var currentDate = DateTime.Now;
             foreach (var word in batch.Words)
@@ -64,8 +64,8 @@ namespace Learning
                 word.LastUse = currentDate;
             }
             batch.LastUse = currentDate;
-            Database.UpdateWords(batch.Words);
-            Database.UpdateCategoryUsage(batch.Id, currentDate);
+            await Database.UpdateWords(batch.Words);
+            await Database.UpdateCategoryUsage(batch.Id, currentDate);
             return batch;
         }
 
