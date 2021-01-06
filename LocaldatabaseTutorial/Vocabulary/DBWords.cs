@@ -155,22 +155,22 @@ namespace Learning
         //            yield return sr.ReadLine();
         //}
 
-        public Task<int> LoadCsv(string path)
-        {
-            List<Category> categories = new List<Category>();
-            using (TextReader reader = File.OpenText(path))
-            {
-                CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-                csv.Configuration.Delimiter = ";";
-                csv.Configuration.MissingFieldFound = null;
-                while (csv.Read())
-                {
-                    Category category = csv.GetRecord<Category>();
-                    categories.Add(category);
-                }
-            }
-            return Connection.InsertAllAsync(categories);
-        }
+        //public Task<int> LoadCsv(string path)
+        //{
+        //    List<Category> categories = new List<Category>();
+        //    using (TextReader reader = File.OpenText(path))
+        //    {
+        //        CsvReader csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        //        csv.Configuration.Delimiter = ";";
+        //        csv.Configuration.MissingFieldFound = null;
+        //        while (csv.Read())
+        //        {
+        //            Category category = csv.GetRecord<Category>();
+        //            categories.Add(category);
+        //        }
+        //    }
+        //    return Connection.InsertAllAsync(categories);
+        //}
 
         public void DropTables()
         {
