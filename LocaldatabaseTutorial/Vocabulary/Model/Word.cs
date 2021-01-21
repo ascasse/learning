@@ -2,7 +2,7 @@
 using SQLiteNetExtensions.Attributes;
 using System;
 
-namespace Learning.Model
+namespace Vocabulary.Model
 {
     [Table("Words")]
     public class Word

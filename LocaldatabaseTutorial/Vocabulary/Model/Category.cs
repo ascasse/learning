@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Learning.Model
+namespace Vocabulary.Model
 {
     [Table("Categories")]
     public class Category
