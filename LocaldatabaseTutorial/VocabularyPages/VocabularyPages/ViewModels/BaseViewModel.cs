@@ -11,6 +11,7 @@ namespace VocabularyPages.ViewModels
     public class BaseViewModel : INotifyPropertyChanged
     {
         public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
+        public IVocabularyData<Vocabulary.Model.Category> WordData => DependencyService.Get<IVocabularyData<Vocabulary.Model.Category>>();
 
         bool isBusy = false;
         public bool IsBusy

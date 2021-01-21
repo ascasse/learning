@@ -27,6 +27,21 @@
             <Style TargetType="TabBar" BasedOn="{StaticResource BaseStyle}" />
             <Style TargetType="FlyoutItem" BasedOn="{StaticResource BaseStyle}" />
 
+            <!-- Sizes -->
+            <x:Double x:Key="TextSizeHeadline">28</x:Double>
+            <x:Double x:Key="TextSizeTitle">20</x:Double>
+            <x:Double x:Key="TextSizeHeading">18</x:Double>
+            <x:Double x:Key="TextSizeSubHeading">16</x:Double>
+            <x:Double x:Key="TextSizeBody">14</x:Double>
+            <x:Double x:Key="TextSizeCaption">12</x:Double>
+            <x:Double x:Key="TextSizeSmallCaption">11</x:Double>
+
+            <Style x:Key="TextBody" TargetType="Label">
+                <!--<Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource TextPrimaryColor_Dark}, Light={StaticResource TextPrimaryColor_Light}}"/>-->
+                <Setter Property="FontSize" Value="{StaticResource TextSizeBody}" />
+                <Setter Property="FontFamily" Value="DMSans"/>
+            </Style>
+
             <!--
             Default Styles for all Flyout Items
             https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/flyout#flyoutitem-and-menuitem-style-classes
@@ -85,6 +100,12 @@
     <FlyoutItem Title="Browse" Icon="icon_feed.png">
         <ShellContent Route="ItemsPage" ContentTemplate="{DataTemplate local:ItemsPage}" />
     </FlyoutItem>
+    <FlyoutItem Title="Recent">
+        <ShellContent Route="RecentPage" ContentTemplate="{DataTemplate local:RecentPage}" />
+    </FlyoutItem>
+    <FlyoutItem Title="Categories">
+        <ShellContent Route="CategoriesPage" ContentTemplate="{DataTemplate local:CategoriesPage}" />
+    </FlyoutItem>    
 
     <!-- When the Flyout is visible this will be a menu item you can tie a click behavior to  -->
     <MenuItem Text="Logout" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItemClicked">

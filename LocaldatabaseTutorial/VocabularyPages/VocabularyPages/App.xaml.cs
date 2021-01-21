@@ -1,4 +1,5 @@
 ﻿using System;
+using Vocabulary.Services;
 using VocabularyPages.Services;
 using VocabularyPages.Views;
 using Xamarin.Forms;
@@ -14,6 +15,7 @@ namespace VocabularyPages
             InitializeComponent();
 
             DependencyService.Register<MockDataStore>();
+            DependencyService.Register<WordService>();
             MainPage = new AppShell();
         }
 

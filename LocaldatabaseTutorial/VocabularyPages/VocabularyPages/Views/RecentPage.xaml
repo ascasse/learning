@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VocabularyPages.Views.RecentPage"
+             Title="{Binding Title}"
+             xmlns:local="clr-namespace:VocabularyPages.ViewModels"  
+             xmlns:model="clr-namespace:VocabularyPages.Models" 
+             >
+    <!--<ContentPage.BindingContext>
+        <local:RecentViewModel/>
+    </ContentPage.BindingContext>-->
+
+    <!--<ContentPage.Resources>
+        <x:Double x:Key="TextSizeBody">20</x:Double>
+        <Style x:Key="TextBody" TargetType="Label">
+            --><!--<Setter Property="TextColor" Value="{AppThemeBinding Dark={StaticResource TextPrimaryColor_Dark}, Light={StaticResource TextPrimaryColor_Light}}"/>--><!--
+            <Setter Property="FontSize" Value="{StaticResource TextSizeBody}" />
+            <Setter Property="FontFamily" Value="DMSans"/>
+        </Style>
+    </ContentPage.Resources>-->
+
+    <ContentPage.Content>
+        <StackLayout>
+            <StackLayout IsVisible="{Binding RecentFound}">
+                <Label Text="No recent categories found" Style="{DynamicResource TextBody}" />
+                <Button Text="Categories" Command="{Binding OnCategoriesClicked}"/>
+            </StackLayout>           
+            <RefreshView x:DataType="local:RecentViewModel" Command="{Binding LoadRecentCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+                <CollectionView x:Name="ItemsListView"
+                        ItemsSource="{Binding RecentCategories}"
+                        SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <StackLayout Padding="10" x:DataType="model:Category">
+                                <Label Text="{Binding Name}" 
+                                    LineBreakMode="NoWrap" 
+                                    Style="{DynamicResource ListItemTextStyle}" 
+                                    FontSize="16" />
+                                <!--<Label Text="{Binding Description}" 
+                                    LineBreakMode="NoWrap"
+                                    Style="{DynamicResource ListItemDetailTextStyle}"
+                                    FontSize="13" />
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer 
+                                        NumberOfTapsRequired="1"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:ItemsViewModel}}, Path=ItemTapped}"		
+                                        CommandParameter="{Binding .}">
+                                    </TapGestureRecognizer>
+                                </StackLayout.GestureRecognizers>-->
+                            </StackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </RefreshView>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

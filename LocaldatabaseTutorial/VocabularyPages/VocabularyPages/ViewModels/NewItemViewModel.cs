@@ -51,7 +51,7 @@ namespace VocabularyPages.ViewModels
         {
             Item newItem = new Item()
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = new Random().Next(),
                 Text = Text,
                 Description = Description
             };

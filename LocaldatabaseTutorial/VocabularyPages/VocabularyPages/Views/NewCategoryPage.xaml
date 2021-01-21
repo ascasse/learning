@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VocabularyPages.Views.NewCategoryPage"
+             Shell.PresentationMode="ModalAnimated"
+             Title="New Category">
+    <ContentPage.Content>
+        <StackLayout Spacing="3" Padding="15">
+            <Label Text="Name" FontSize="Medium" />
+            <Entry Text="{Binding Name, Mode=TwoWay}" FontSize="Medium" />
+            <CollectionView x:Name="WordListView"
+                            ItemsSource="{Binding Words}"
+                            BackgroundColor="Beige"
+                            SelectionMode="None">
+                <CollectionView.Header>
+                    <Label Text="Words" FontSize="Medium"/>
+                </CollectionView.Header>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Label Text="{Binding .}" 
+                               LineBreakMode="NoWrap" 
+                               Style="{DynamicResource ListItemTextStyle}" 
+                               FontSize="16" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.Footer>
+                    <StackLayout Orientation="Horizontal">
+                        <Entry Text="{Binding NewWord, Mode=TwoWay}" FontSize="Medium" HorizontalOptions="FillAndExpand"/>
+                        <Button Text="Add word" Command="{Binding AddWordCommand}" 
+                                FontSize="Medium" VerticalOptions="CenterAndExpand" HorizontalOptions="Center" />
+                    </StackLayout>
+                </CollectionView.Footer>
+            </CollectionView>
+            <StackLayout Orientation="Horizontal">
+                <Button Text="Cancel" Command="{Binding CancelCommand}" HorizontalOptions="FillAndExpand"></Button>
+                <Button Text="Save" Command="{Binding SaveCommand}" HorizontalOptions="FillAndExpand"></Button>
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
