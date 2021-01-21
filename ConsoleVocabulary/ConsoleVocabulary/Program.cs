@@ -14,7 +14,22 @@ namespace Vocabulary
     {
         public static async Task Main()
         {
+            Service service = new Service("Vocabulary.db3")
+            {
+                BatchSize = 5,
+                MaxViews = 2,
+                RefreshRate = 3
+            };
 
+            Category ctg = await service.GetCategory(1);
+            Console.WriteLine(ctg.Name);
+
+
+            Console.ReadLine();
+        }
+
+        private static async void ManageBatches()
+        {
             Service service = new Service(":memory:")
             {
                 BatchSize = 5,
@@ -27,7 +42,7 @@ namespace Vocabulary
             Category ctg = service.GetCategory(1).Result;
             Console.WriteLine($"Category {ctg.Name}.");
             Console.WriteLine($"{ctg.Words.Count} words in category.");
-            foreach(Word w in ctg.Words)
+            foreach (Word w in ctg.Words)
             {
                 Console.WriteLine(w.Text);
             }
@@ -40,15 +55,13 @@ namespace Vocabulary
                 var words = batch.Words.Select(w => w.Id);
                 Console.WriteLine($"Iteration { ++iteration }");
                 Console.WriteLine(string.Join(",", words));
-                service.UpdateBatch(batch);
+                await service.UpdateBatch(batch);
             }
             Console.WriteLine($"Completed");
             ctg = service.GetCategory(1).Result;
             var views = ctg.Words.Select(w => w.Views);
             Console.WriteLine(string.Join(",", views));
             await service.Close();
-
-            Console.ReadLine();
         }
     }
 }
