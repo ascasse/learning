@@ -1,12 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="VocabularyPages.Views.CategoryDetailPage">
+             x:Class="VocabularyPages.Views.CategoryDetailPage"
+             xmlns:local="clr-namespace:VocabularyPages.ViewModels"
+             Title="Category details" 
+             BindingContext="local:ItemDetailViewModel">
     <ContentPage.Content>
-        <StackLayout>
-            <Label Text="CategoryDetailPage"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
+        <StackLayout Margin="20">
+            <Label Text="Category"></Label>
+            <Label Text="{Binding Category.Name, Mode=TwoWay}" FontSize="Medium" />
+            <Label Text="Last use"/>
+            <Label Text="{Binding Category.LastUse, StringFormat='{0:dd/MM/yyyy}'}"/>
+            <CollectionView ItemsSource="{Binding Category.Words}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Label Text="{Binding Text}"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

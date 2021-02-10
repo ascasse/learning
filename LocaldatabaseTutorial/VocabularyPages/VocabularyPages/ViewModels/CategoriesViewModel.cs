@@ -19,6 +19,7 @@ namespace VocabularyPages.ViewModels
         public Command AddItemCommand { get; }
         public Command<Category> ItemTapped { get; }
 
+
         public CategoriesViewModel()
         {
             Title = "Categories";
@@ -28,6 +29,7 @@ namespace VocabularyPages.ViewModels
             ItemTapped = new Command<Category>(OnItemSelected);
 
             AddItemCommand = new Command(OnAddItem);
+
         }
 
         async Task ExecuteLoadItemsCommand()
@@ -80,7 +82,13 @@ namespace VocabularyPages.ViewModels
                 return;
 
             // This will push the ItemDetailPage onto the navigation stack
-            await Shell.Current.GoToAsync($"{nameof(CategoryDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}");
+            await Shell.Current.GoToAsync($"{nameof(CategoryDetailPage)}/{nameof(ItemDetailViewModel.ItemId)}");
+        }
+
+        async void OnItemTapped(object obj)
+        {
+            await Shell.Current.GoToAsync($"{nameof(CategoryDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}=0");
+            //await Shell.Current.GoToAsync($"{nameof(CategoryDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}");
         }
 
         Category MapCategory(Vocabulary.Model.Category category)

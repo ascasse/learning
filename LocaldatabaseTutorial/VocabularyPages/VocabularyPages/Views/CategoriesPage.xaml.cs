@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VocabularyPages.Models;
 using VocabularyPages.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -24,6 +25,15 @@ namespace VocabularyPages.Views
         {
             base.OnAppearing();
             _viewModel.OnAppearing();
+        }
+
+        async void CategoriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Category selected = (Category)e.CurrentSelection.FirstOrDefault();
+            if (selected == null)
+                return;
+
+            await Shell.Current.GoToAsync($"{nameof(CategoryDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={selected.Id}");
         }
     }
 }

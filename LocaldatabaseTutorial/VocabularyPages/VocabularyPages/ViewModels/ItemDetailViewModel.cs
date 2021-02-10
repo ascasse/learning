@@ -6,32 +6,38 @@ using Xamarin.Forms;
 
 namespace VocabularyPages.ViewModels
 {
-    [QueryProperty(nameof(ItemId), nameof(ItemId))]
     public class ItemDetailViewModel : BaseViewModel
     {
+        public ItemDetailViewModel() { }
+
+        public ItemDetailViewModel (int id)
+        {
+            ItemId = id;
+        }
+
+        public Category Category { get; set; }
+
         private int itemId;
-        private string text;
+        private string name;
         private string description;
         public int Id { get; set; }
 
-        public string Text
-        {
-            get => text;
-            set => SetProperty(ref text, value);
-        }
 
-        public string Description
-        {
-            get => description;
-            set => SetProperty(ref description, value);
-        }
+        //public string Name
+        //{
+        //    get => name;
+        //    set => SetProperty(ref name, value);
+        //}
+
+        //public string Description
+        //{
+        //    get => description;
+        //    set => SetProperty(ref description, value);
+        //}
 
         public int ItemId
         {
-            get
-            {
-                return itemId;
-            }
+            get => itemId;
             set
             {
                 itemId = value;
@@ -43,10 +49,10 @@ namespace VocabularyPages.ViewModels
         {
             try
             {
-                var item = await DataStore.GetItemAsync(itemId);
-                Id = item.Id;
-                Text = item.Text;
-                Description = item.Description;
+                var item = await WordData.GetItemAsync(itemId);
+                Category = new Category(item);
+                //Id = ctg.Id;
+                //Name = ctg.Name;
             }
             catch (Exception)
             {
