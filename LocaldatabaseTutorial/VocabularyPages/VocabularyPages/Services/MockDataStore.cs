@@ -25,14 +25,14 @@ namespace VocabularyPages.Services
 
             recent = new List<Category>()
             {
-                new Category { Id = 1, Name = "Category 1", LastUse = DateTime.Now,
+                new Category { Id = 1, Name = "Category 1", LastUse = DateTime.Now.ToString("dd/MM/yyyy"),
                     Words = new List<Word>
                     {
                         new Word { Id = 1, Text = "Word 1", LastUse = DateTime.Now, Views = 1 },
                         new Word { Id = 2, Text = "Word 2", LastUse = DateTime.Now, Views = 1 },
                     }
                 },
-                new Category { Id = 2, Name = "Category 2", LastUse = DateTime.Now,
+                new Category { Id = 2, Name = "Category 2", LastUse = DateTime.Now.ToString("dd/MM/yyyy"),
                     Words = new List<Word>
                     {
                         new Word { Id = 3, Text = "Word 3", LastUse = DateTime.Now, Views = 1 },

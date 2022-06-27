@@ -82,12 +82,12 @@ namespace VocabularyPages.ViewModels
                 return;
 
             // This will push the ItemDetailPage onto the navigation stack
-            await Shell.Current.GoToAsync($"{nameof(CategoryDetailPage)}/{nameof(ItemDetailViewModel.ItemId)}");
+            await Shell.Current.GoToAsync($"{nameof(CategoryDetailPage)}/{nameof(CategoryDetailViewModel.Id)}");
         }
 
         async void OnItemTapped(object obj)
         {
-            await Shell.Current.GoToAsync($"{nameof(CategoryDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}=0");
+            await Shell.Current.GoToAsync($"{nameof(CategoryDetailPage)}?{nameof(CategoryDetailViewModel.Id)}=0");
             //await Shell.Current.GoToAsync($"{nameof(CategoryDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={item.Id}");
         }
 
@@ -97,8 +97,8 @@ namespace VocabularyPages.ViewModels
             {
                 Id = category.Id,
                 Name = category.Name,
-                LastUse = category.LastUse,
-                Words = new List<Word>()
+                LastUse = category.LastUse != DateTime.MinValue ? category.LastUse.ToString("dd/MM/yyyy") : "Not used",
+            Words = new List<Word>()
             };
             if (category.Words != null)
             {

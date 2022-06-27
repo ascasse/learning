@@ -32,8 +32,7 @@ namespace VocabularyPages.Views
             Category selected = (Category)e.CurrentSelection.FirstOrDefault();
             if (selected == null)
                 return;
-
-            await Shell.Current.GoToAsync($"{nameof(CategoryDetailPage)}?{nameof(ItemDetailViewModel.ItemId)}={selected.Id}");
+            await Shell.Current.GoToAsync($"{nameof(CategoryDetailPage)}?id={selected.Id}");
         }
     }
 }

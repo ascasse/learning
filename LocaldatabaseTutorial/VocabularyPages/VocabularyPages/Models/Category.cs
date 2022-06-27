@@ -11,7 +11,7 @@ namespace VocabularyPages.Models
 
         public string Name { get; set; }
 
-        public DateTime? LastUse { get; set; }
+        public string LastUse { get; set; }
 
         public List<Word> Words { get; set; }
 
@@ -19,7 +19,7 @@ namespace VocabularyPages.Models
         {
             Id = category.Id;
             Name = category.Name;
-            LastUse = category.LastUse;
+            LastUse = category.LastUse != DateTime.MinValue ? category.LastUse.ToString("dd/MM/yyyy") : "Not used";
             Words = new List<Word>();
             if (category.Words != null)
             {

@@ -9,29 +9,20 @@ using Xamarin.Forms.Xaml;
 
 namespace VocabularyPages.Views
 {
-    [QueryProperty(nameof(ItemId), nameof(ItemId))]
+    [QueryProperty("CategoryId", "id")]
     public partial class CategoryDetailPage : ContentPage
     {
-        private string itemId;
+        public string CategoryId
+        {
+            set
+            {
+                BindingContext = new CategoryDetailViewModel(int.Parse(Uri.UnescapeDataString(value)));
+            }
+        }
 
         public CategoryDetailPage()
         {
             InitializeComponent();
-            //BindingContext = new ItemDetailViewModel(int.Parse(ItemId));
-            //BindingContext = new ItemDetailViewModel();
-        }
-
-        public string ItemId 
-        { 
-            get => itemId;
-            set 
-            {
-                itemId = Uri.UnescapeDataString(value ?? string.Empty);
-                if (!String.IsNullOrEmpty(itemId))
-                {
-                    BindingContext = new ItemDetailViewModel(int.Parse(itemId));
-                }
-            } 
         }
     }
 }
