@@ -14,16 +14,17 @@ namespace Vocabulary
     {
         public static async Task Main()
         {
-            Service service = new Service("Vocabulary.db3")
-            {
-                BatchSize = 5,
-                MaxViews = 2,
-                RefreshRate = 3
-            };
+            //Service service = new Service("Vocabulary.db3")
+            //{
+            //    BatchSize = 5,
+            //    MaxViews = 2,
+            //    RefreshRate = 3
+            //};
 
-            Category ctg = await service.GetCategory(1);
-            Console.WriteLine(ctg.Name);
+            //Category ctg = await service.GetCategory(1);
+            //Console.WriteLine(ctg.Name);
 
+            ManageBatches();
 
             Console.ReadLine();
         }

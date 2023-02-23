@@ -25,7 +25,8 @@ namespace Learning
         {
             _database = database;
             _connection = new Lazy<SQLiteAsyncConnection>(() => Initialize().Result, true);
-            //InitializeAsync().SafeFireAndForget();
+            if (database == ":memory:")
+                Initialize();
         }
 
         private async Task<SQLiteAsyncConnection> Initialize()
