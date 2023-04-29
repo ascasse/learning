@@ -8,7 +8,7 @@ namespace Learning
 {
     public class Service
     {
-        private DBWords Database { get; set; }
+        private DBMaterial Database { get; set; }
         /// <summary>Max number of recently viewed categories to return.</summary>
         public int RecentCount { get; set; } = 5;
         /// <summary>Date range to look for recently viewed categories or words, in days.</summary>
@@ -24,12 +24,17 @@ namespace Learning
 
         public Service(string connectionString)
         {
-            Database = new DBWords(connectionString);
+            Database = new DBMaterial(connectionString);
         }
 
         public async Task<List<Category>> GetCategories()
         {
             return await Database.GetCategories();
+        }
+
+        public async Task<List<ItemCategory>> GetCategoriesComplete()
+        {
+            return await Database.GetCategoriesCompleteAsync();
         }
 
         public async Task<Category> GetCategory(int id)
@@ -58,13 +63,13 @@ namespace Learning
         public async Task<Category> UpdateBatch(Category batch)
         {
             var currentDate = DateTime.Now;
-            foreach (var word in batch.Words)
+            foreach (var word in batch.Items)
             {
                 word.Views += 1;
                 word.LastUse = currentDate;
             }
             batch.LastUse = currentDate;
-            await Database.UpdateWords(batch.Words);
+            await Database.UpdateItems(batch.Items);
             await Database.UpdateCategoryUsage(batch.Id, currentDate);
             return batch;
         }
@@ -87,7 +92,7 @@ namespace Learning
 
         public Category BuildBatchFromCategory(Category category)
         {
-            if (category.Words == null)
+            if (category.Items == null)
                 return category;
 
             Category batch = new Category()
@@ -97,7 +102,7 @@ namespace Learning
             };
 
             // Look for elements viewed fewer times than the max.
-            var to_view = category.Words.Where(word => word.Views < MaxViews);
+            var to_view = category.Items.Where(word => word.Views < MaxViews);
 
             // All elements have reached the max number of views. Return an empty batch
             if (to_view.Count() == 0)
@@ -105,22 +110,22 @@ namespace Learning
 
             // Category has fewer or equal number of elements than batch size. 
             // The batch will be the category itself. Nothing to do.
-            if (category.Words.Count <= BatchSize)
+            if (category.Items.Count <= BatchSize)
                 return category;
 
-            var sorted_words = category.Words.OrderByDescending(word => word.Views).ThenByDescending(word => word.LastUse);
+            var sorted_words = category.Items.OrderByDescending(word => word.Views).ThenByDescending(word => word.LastUse);
             
             // If no element has reached max_views, take the first BatchSize elements
             if (sorted_words.First().Views < MaxViews)
             {
-                batch.Words = sorted_words.Take(BatchSize).ToList();
+                batch.Items = sorted_words.Take(BatchSize).ToList();
                 return batch;
             }
 
             if (to_view.Count() <= RefreshRate)
-                batch.Words = sorted_words.Skip(Math.Max(0, sorted_words.Count() - BatchSize)).ToList();
+                batch.Items = sorted_words.Skip(Math.Max(0, sorted_words.Count() - BatchSize)).ToList();
             else
-                batch.Words = sorted_words.Skip(Math.Max(0, sorted_words.Count() - to_view.Count() - (BatchSize - RefreshRate))).Take(BatchSize).ToList();
+                batch.Items = sorted_words.Skip(Math.Max(0, sorted_words.Count() - to_view.Count() - (BatchSize - RefreshRate))).Take(BatchSize).ToList();
 
             return batch;
         }

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Learning  
 {
 
-    public class DBWords : IDisposable
+    public class DBMaterial : IDisposable
     {
         private readonly string _database;
         private readonly Lazy<SQLiteAsyncConnection> _connection;
@@ -21,7 +21,7 @@ namespace Learning
 
         public SQLiteAsyncConnection Connection => _connection.Value;
 
-        public DBWords(string database)
+        public DBMaterial(string database)
         {
             _database = database;
             _connection = new Lazy<SQLiteAsyncConnection>(() => Initialize().Result, true);
@@ -73,6 +73,12 @@ namespace Learning
         {
             return await Connection.Table<Category>().ToListAsync();
         }
+
+        public async Task<List<ItemCategory>> GetCategoriesCompleteAsync()
+        {
+            string sql = "SELECT c.Id, Name, Text, Image FROM Categories c JOIN items it ON it.CategoryId = c.Id";
+            return await Connection.QueryAsync<ItemCategory>(sql);
+        }
         
 
         public async Task<Category> GetCategory(int id)
@@ -80,8 +86,8 @@ namespace Learning
             var category = await Connection.FindAsync<Category>(id);
             if (category == null)
                 return null;
-            var words = await Connection.QueryAsync<Item>("SELECT * FROM Words WHERE categoryId = ?", new object[] { category.Id });
-            category.Items = words;
+            var Items = await Connection.QueryAsync<Item>("SELECT * FROM Items WHERE categoryId = ?", new object[] { category.Id });
+            category.Items = Items;
             return category;
         }
 
@@ -110,9 +116,9 @@ namespace Learning
             return Connection.DeleteAsync<Category>(id);
         }
 
-        public Task<int> UpdateWords(List<Item>words)
+        public Task<int> UpdateItems(List<Item>Items)
         {
-            return Connection.UpdateAllAsync(words);
+            return Connection.UpdateAllAsync(Items);
         }
 
         private void CheckDatabase()
@@ -195,7 +201,7 @@ namespace Learning
         }
 
         // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~DBWords()
+        // ~DBItems()
         // {
         //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         //     Dispose(disposing: false);

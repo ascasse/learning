@@ -23,8 +23,8 @@ namespace Learning.Tests
             // Test category
             testCategory = db.LoadFromString("Food,Pizza,Ham,Eggs");
             testCategory.LastUse = DateTime.Now.Date;
-            testCategory.Words.Select(w => w.LastUse = DateTime.Now.Date).ToList();
-            testCategory.Words.Select(w => w.Views = 1).ToList();
+            testCategory.Items.Select(w => w.LastUse = DateTime.Now.Date).ToList();
+            testCategory.Items.Select(w => w.Views = 1).ToList();
         }
 
 
@@ -43,12 +43,12 @@ namespace Learning.Tests
             Assert.IsNotNull(ctg);
             Assert.AreEqual(1, ctg.Id);
             Assert.AreEqual(DateTime.Now.Date, ctg.LastUse);
-            Assert.AreEqual(3, ctg.Words.Count);
+            Assert.AreEqual(3, ctg.Items.Count);
 
-            Assert.AreEqual("Pizza", testCategory.Words[0].Text);
-            Assert.AreEqual("Ham", testCategory.Words[1].Text);
-            Assert.AreEqual("Eggs", testCategory.Words[2].Text);
-            foreach (Word w in ctg.Words)
+            Assert.AreEqual("Pizza", testCategory.Items[0].Text);
+            Assert.AreEqual("Ham", testCategory.Items[1].Text);
+            Assert.AreEqual("Eggs", testCategory.Items[2].Text);
+            foreach (Item w in ctg.Items)
             {
                 Assert.AreEqual(DateTime.Now.Date, w.LastUse);
                 Assert.AreEqual(1, w.Views);
@@ -74,21 +74,21 @@ namespace Learning.Tests
         [Test()]
         public async Task Update_Category_Words_Test()
         {
-            await db.Connection.DeleteAllAsync<Word>(); 
+            await db.Connection.DeleteAllAsync<Item>(); 
 
             Category category = GetTestCategory().Result;
-            category.Words.RemoveAll(x => x.Text.Equals("Ham"));
-            category.Words.Add(new Word() { Text = "Pasta" });
+            category.Items.RemoveAll(x => x.Text.Equals("Ham"));
+            category.Items.Add(new Item() { Text = "Pasta" });
 
             Category updatedCategory = db.UpdateCategory(category).Result;
             Assert.IsNotNull(updatedCategory);
-            Assert.AreEqual(3, updatedCategory.Words.Count);
+            Assert.AreEqual(3, updatedCategory.Items.Count);
         }
 
         [Test()]
         public async Task Update_Category_LastUse_Test()
         {
-            await db.Connection.DeleteAllAsync<Word>(); 
+            await db.Connection.DeleteAllAsync<Item>(); 
 
             Category category = GetTestCategory().Result;
             Assert.IsNotNull(category);
@@ -103,20 +103,20 @@ namespace Learning.Tests
         [Test()]
         public async Task Update_Words_View_Test()
         {
-            await db.Connection.DeleteAllAsync<Word>();
+            await db.Connection.DeleteAllAsync<Item>();
 
             Category category = GetTestCategory().Result;
-            foreach (var word in category.Words)
+            foreach (var word in category.Items)
             {
                 word.Views += 1;
                 word.LastUse = DateTime.Now.Date;
             }
-            int updated = db.UpdateWords(category.Words).Result;
+            int updated = db.UpdateWords(category.Items).Result;
 
             Assert.AreEqual(3, updated);
 
             category = db.GetCategory(category.Id).Result;
-            foreach (var word in category.Words)
+            foreach (var word in category.Items)
             {
                 Assert.AreEqual(2, word.Views);
             }
@@ -152,12 +152,12 @@ namespace Learning.Tests
 
         private void AddData()
         {
-            List<Word> words = new List<Word>() { new Word
+            List<Item> words = new List<Item>() { new Item
             {
                 Text = "Eggs",
                 LastUse = DateTime.Today
             },
-            new Word
+            new Item
             {
                 Text = "Pizza",
                 LastUse = DateTime.Today
@@ -171,7 +171,7 @@ namespace Learning.Tests
 
             db.Connection.InsertAsync(newCategory);
             db.Connection.InsertAllAsync(words);
-            newCategory.Words = words;
+            newCategory.Items = words;
             db.UpdateCategory(newCategory);
         }
 
@@ -181,11 +181,11 @@ namespace Learning.Tests
             Category category = new Category()
             {
                 Name = parts[0],
-                Words = new List<Word>()
+                Items = new List<Item>()
             };
             foreach (var part in parts.Skip<string>(1))
             {
-                category.Words.Add(new Word() { Text = part });
+                category.Items.Add(new Item() { Text = part });
             }
             return category;
         }
