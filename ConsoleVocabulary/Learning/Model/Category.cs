@@ -2,7 +2,6 @@
 using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Learning.Model
 {
@@ -13,6 +12,7 @@ namespace Learning.Model
         public int Id { get; set; }
         public string Name { get; set; }
         public DateTime LastUse { get; set; }
+        public int Type { get; set; }
         [OneToMany]
         public List<Word> Words { get; set; }
     }
