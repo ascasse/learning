@@ -14,6 +14,6 @@ namespace Learning.Model
         public DateTime LastUse { get; set; }
         public int Type { get; set; }
         [OneToMany]
-        public List<Word> Words { get; set; }
+        public List<Item> Items { get; set; } = new List<Item>();
     }
 }
