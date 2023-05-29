@@ -1,7 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Learning;
 using Learning.Model;
-using Microsoft.VisualBasic;
 using System.Configuration;
 
 // Find the database file
@@ -30,15 +29,15 @@ int iteration = 0;
 while (iteration < 10)
 {
     Category batch = service.BuildBatchFromCategory(ctg);
-    if (batch.Words == null)
+    if (batch.Items == null)
         break;
-    var words = batch.Words.Select(w => w.Id);
+    var words = batch.Items.Select(w => w.Text);
     Console.WriteLine($"Iteration {++iteration}");
     Console.WriteLine(string.Join(",", words));
     await service.UpdateBatch(batch);
 }
 Console.WriteLine($"Completed");
 ctg = service.GetCategory(ctg.Id).Result;
-var views = ctg.Words.Select(w => w.Views);
+var views = ctg.Items.Select(w => w.Views);
 Console.WriteLine(string.Join(",", views));
 await service.Close();

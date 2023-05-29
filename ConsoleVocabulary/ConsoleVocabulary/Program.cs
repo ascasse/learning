@@ -42,8 +42,8 @@ namespace Vocabulary
 
             Category ctg = service.GetCategory(1).Result;
             Console.WriteLine($"Category {ctg.Name}.");
-            Console.WriteLine($"{ctg.Words.Count} words in category.");
-            foreach (Word w in ctg.Words)
+            Console.WriteLine($"{ctg.Items.Count} words in category.");
+            foreach (Item w in ctg.Items)
             {
                 Console.WriteLine(w.Text);
             }
@@ -51,16 +51,16 @@ namespace Vocabulary
             while (iteration < 10)
             {
                 Category batch = service.BuildBatchFromCategory(ctg);
-                if (batch.Words == null)
+                if (batch.Items == null)
                     break;
-                var words = batch.Words.Select(w => w.Id);
+                var words = batch.Items.Select(w => w.Id);
                 Console.WriteLine($"Iteration { ++iteration }");
                 Console.WriteLine(string.Join(",", words));
                 await service.UpdateBatch(batch);
             }
             Console.WriteLine($"Completed");
             ctg = service.GetCategory(1).Result;
-            var views = ctg.Words.Select(w => w.Views);
+            var views = ctg.Items.Select(w => w.Views);
             Console.WriteLine(string.Join(",", views));
             await service.Close();
         }
