@@ -13,14 +13,14 @@ public static class CategoryEndpoints
 
         group.MapGet("/", async (MaterialAPIContext db) =>
         {
-            return await db.Categories.ToListAsync();
+            return await db.Categories.Include("Items").ToListAsync();
         })
         .WithName("GetAllCategorys")
         .WithOpenApi();
 
         group.MapGet("/{id}", async Task<Results<Ok<Category>, NotFound>> (int id, MaterialAPIContext db) =>
         {
-            return await db.Categories.AsNoTracking()
+            return await db.Categories.Include("Items").AsNoTracking()
                 .FirstOrDefaultAsync(model => model.Id == id)
                 is Category model
                     ? TypedResults.Ok(model)

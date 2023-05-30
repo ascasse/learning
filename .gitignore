@@ -355,3 +355,5 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+*.db3-wal
+*.db3-shm
