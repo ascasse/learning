@@ -3,6 +3,9 @@ using MaterialAPI.Data;
 using MaterialAPI.Model;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.OpenApi;
+using MaterialAPI.Services;
+using Microsoft.Extensions.Options;
+
 namespace MaterialAPI;
 
 public static class CategoryEndpoints
@@ -16,6 +19,13 @@ public static class CategoryEndpoints
             return await db.Categories.Include("Items").ToListAsync();
         })
         .WithName("GetAllCategorys")
+        .WithOpenApi();
+
+        group.MapGet("/batch/",  (MaterialAPIContext db) =>
+        { 
+            return new Service(db).GetRecent();
+        })
+        .WithName("GetRecent")
         .WithOpenApi();
 
         group.MapGet("/{id}", async Task<Results<Ok<Category>, NotFound>> (int id, MaterialAPIContext db) =>
