@@ -21,13 +21,6 @@ public static class CategoryEndpoints
         .WithName("GetAllCategorys")
         .WithOpenApi();
 
-        group.MapGet("/batch/",  (MaterialAPIContext db) =>
-        { 
-            return new Service(db).GetRecent();
-        })
-        .WithName("GetRecent")
-        .WithOpenApi();
-
         group.MapGet("/{id}", async Task<Results<Ok<Category>, NotFound>> (int id, MaterialAPIContext db) =>
         {
             return await db.Categories.Include("Items").AsNoTracking()

@@ -357,3 +357,5 @@ MigrationBackup/
 .ionide/
 *.db3-wal
 *.db3-shm
+
+MaterialAPI/MaterialAPI/Material

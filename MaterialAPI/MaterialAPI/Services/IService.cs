@@ -4,6 +4,9 @@ namespace MaterialAPI.Services
 {
     public interface IService
     {
-        IEnumerable<Category> GetRecent();
+        void CheckDatabase();
+        List<Category> GetRecent();
+        IEnumerable<Category> GetRecent2();
+        Category BuildBatchFromCategory(int id);
     }
 }

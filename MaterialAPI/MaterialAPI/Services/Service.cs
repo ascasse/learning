@@ -1,5 +1,6 @@
 ﻿using MaterialAPI.Data;
 using MaterialAPI.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace MaterialAPI.Services
 {
@@ -25,10 +26,46 @@ namespace MaterialAPI.Services
             this.db = db;
         }
 
-        public IEnumerable<Category> GetRecent()
+        public void CheckDatabase()
+        {
+            using (var command = db.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = "SELECT name from sqlite_master WHERE type='table'";
+                db.Database.OpenConnection();
+                using (var result = command.ExecuteReader())
+                {
+                    while (result.Read())
+                    {
+                        Console.WriteLine(result.GetString(0));
+                    }
+                }
+            }
+        }
+
+
+        public IEnumerable<Category> GetRecent2()
         {
             DateTime recent_day = DateTime.Now.AddDays(-RecentDays);
-            return db.Categories.Where(c => c.LastUse > recent_day || c.LastUse == DateTime.MinValue).OrderByDescending(c => c.LastUse).Take(RecentCount).AsEnumerable();
+            return db.Categories.Include("Items").Where(c => c.LastUse > recent_day || c.LastUse == DateTime.MinValue).OrderByDescending(c => c.LastUse).Take(RecentCount).AsEnumerable();
+        }
+
+        public List<Category> GetRecent()
+        {
+            DateTime recent_day = DateTime.Now.AddDays(-RecentDays);
+            IEnumerable<Category> categories = db.Categories.Include("Items").Where(c => c.LastUse > recent_day || c.LastUse == DateTime.MinValue).OrderByDescending(c => c.LastUse).Take(RecentCount).AsEnumerable();
+            List<Category> recent = new List<Category>();
+            foreach (var category in categories)
+                recent.Add(BuildBatchFromCategory(category));
+
+            return recent;
+        }
+
+        public Category BuildBatchFromCategory(int id)
+        {
+            var category = db.Categories.Include("Items").FirstOrDefault(c => c.Id == id);
+            if (category == null) { return new Category(); }
+
+            return BuildBatchFromCategory(category);
         }
 
         public Category BuildBatchFromCategory(Category category)
@@ -36,11 +73,7 @@ namespace MaterialAPI.Services
             if (category.Items == null)
                 return category;
 
-            Category batch = new Category()
-            {
-                Id = category.Id,
-                Name = category.Name
-            };
+            Category batch = new Category(category);
 
             // Look for elements viewed fewer times than the max.
             var to_view = category.Items.Where(word => word.Views < MaxViews);
@@ -69,6 +102,35 @@ namespace MaterialAPI.Services
                 batch.Items = sorted_words.Skip(Math.Max(0, sorted_words.Count() - to_view.Count() - (BatchSize - RefreshRate))).Take(BatchSize).ToList();
 
             return batch;
+        }
+
+        public int UpdateBatch(Category batch)
+        {
+            Category toUpdate = db.Categories.Include("Items").FirstOrDefault(c => c.Id == batch.Id) ?? throw new ArgumentException("Category not found.");
+
+            DateTime now = DateTime.Now;
+            foreach (Item item in toUpdate.Items
+                .Where(item => batch.Items.Select(item => item.Id).Contains(item.Id))) 
+            {
+                item.Views += 1;
+                item.LastUse = now;
+            }
+            toUpdate.LastUse = now;
+
+            return db.SaveChanges();
+        }
+
+        public int ResetCategory(int id)
+        {
+            Category toUpdate = db.Categories.Include("Items").FirstOrDefault(c => c.Id == id) ?? throw new ArgumentException("Category not found.");
+            foreach (Item item in toUpdate.Items)
+            {
+                item.Views = 0;
+                item.LastUse = DateTime.MinValue;
+            }
+            toUpdate.LastUse = DateTime.MinValue;
+
+            return db.SaveChanges();
         }
     }
 }
