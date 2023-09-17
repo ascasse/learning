@@ -87,6 +87,7 @@
     <Content Include="Data\categories.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Data\material.db3" />
     <None Include="packages.config" />
     <None Include="Vocabulary.db3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

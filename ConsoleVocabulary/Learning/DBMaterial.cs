@@ -25,8 +25,7 @@ namespace Learning
         {
             _database = database;
             _connection = new Lazy<SQLiteAsyncConnection>(() => Initialize().Result, true);
-            if (database == ":memory:")
-                Initialize();
+            Initialize();
         }
 
         private async Task<SQLiteAsyncConnection> Initialize()
@@ -34,11 +33,11 @@ namespace Learning
             SQLiteAsyncConnection connection = new SQLiteAsyncConnection(_database, true);
             if (!initialized)
             {
-                if (!connection.TableMappings.Any(m => m.MappedType.Name == typeof(Category).Name))
+                if (!connection.TableMappings.Any(m => m.MappedType.Name == "Categories"))
                 {
                     await connection.CreateTablesAsync(CreateFlags.None, typeof(Category)).ConfigureAwait(false);
                 }
-                if (!connection.TableMappings.Any(m => m.MappedType.Name == typeof(Item).Name))
+                if (!connection.TableMappings.Any(m => m.MappedType.Name == "Items"))
                 {
                     await connection.CreateTablesAsync(CreateFlags.None, typeof(Item)).ConfigureAwait(false);
                 }
