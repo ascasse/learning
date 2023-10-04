@@ -132,5 +132,12 @@ namespace MaterialAPI.Services
 
             return db.SaveChanges();
         }
+
+        public string GetFilePath(int id)
+        {
+            var item = db.Items.Find(id);
+            return "c:\\background\\1920x1080\\tren.jpg";
+            //return item != null ? item.Image : string.Empty;
+        }
     }
 }

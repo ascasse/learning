@@ -8,5 +8,6 @@ namespace MaterialAPI.Services
         List<Category> GetRecent();
         IEnumerable<Category> GetRecent2();
         Category BuildBatchFromCategory(int id);
+        string GetFilePath(int id);
     }
 }

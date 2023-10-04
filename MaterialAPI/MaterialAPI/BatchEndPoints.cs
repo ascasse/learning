@@ -3,6 +3,7 @@ using MaterialAPI.Model;
 using MaterialAPI.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
 namespace MaterialAPI
 {
@@ -24,6 +25,15 @@ namespace MaterialAPI
                 return new Service(db).BuildBatchFromCategory(id);
             })
             .WithName("BuildBatchFromCategory")
+            .WithOpenApi();
+
+            group.MapGet("/image/{id}", 
+                async (int id, MaterialAPIContext db, CancellationToken token) =>
+                {
+                    var filePath = new Service(db).GetFilePath(id);
+                    return Results.Stream(new MemoryStream(File.ReadAllBytesAsync(filePath, cancellationToken: token).Result), "image/jpeg");
+                })
+            .WithName("GetImage")
             .WithOpenApi();
 
             group.MapPut("/", (Category category, MaterialAPIContext db) =>
