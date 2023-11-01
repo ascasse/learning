@@ -52,7 +52,11 @@ namespace MaterialAPI.Services
         public List<Category> GetRecent()
         {
             DateTime recent_day = DateTime.Now.AddDays(-RecentDays);
-            IEnumerable<Category> categories = db.Categories.Include("Items").Where(c => c.LastUse > recent_day || c.LastUse == DateTime.MinValue).OrderByDescending(c => c.LastUse).Take(RecentCount).AsEnumerable();
+            IEnumerable<Category> categories = db.Categories.Include("Items")
+                .Where(c => c.LastUse > recent_day || 
+                    c.LastUse == DateTime.MinValue ||
+                    c.LastUse == null)
+                .OrderByDescending(c => c.LastUse).Take(RecentCount).AsEnumerable();
             List<Category> recent = new List<Category>();
             foreach (var category in categories)
                 recent.Add(BuildBatchFromCategory(category));
