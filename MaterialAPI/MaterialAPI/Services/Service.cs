@@ -139,8 +139,12 @@ namespace MaterialAPI.Services
 
         public string GetFilePath(int id)
         {
+            string basePath = @"e:\material\bits";
+
             var item = db.Items.Find(id);
-            return "c:\\background\\1920x1080\\tren.jpg";
+            if (item == null || item.Image == null) return string.Empty;
+            return Path.Combine(basePath, item.Image);
+            //return "c:\\background\\1920x1080\\tren.jpg";
             //return item != null ? item.Image : string.Empty;
         }
     }
