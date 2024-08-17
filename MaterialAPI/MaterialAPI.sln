@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MaterialAPI", "MaterialAPI\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MaterialAPITest", "MaterialAPITest\MaterialAPITest.csproj", "{7CD38E43-4570-4DB5-8DBE-101795AA65F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleClient", "ConsoleClient\ConsoleClient.csproj", "{7C2D2069-B8D7-4D53-8559-7440D7F8613C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleClient", "ConsoleClient\ConsoleClient.csproj", "{7C2D2069-B8D7-4D53-8559-7440D7F8613C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TodoREST", "TodoREST\TodoREST.csproj", "{42467A85-E315-453F-B0D8-FB518125F285}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,12 @@ Global
 		{7C2D2069-B8D7-4D53-8559-7440D7F8613C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C2D2069-B8D7-4D53-8559-7440D7F8613C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C2D2069-B8D7-4D53-8559-7440D7F8613C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42467A85-E315-453F-B0D8-FB518125F285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42467A85-E315-453F-B0D8-FB518125F285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42467A85-E315-453F-B0D8-FB518125F285}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{42467A85-E315-453F-B0D8-FB518125F285}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42467A85-E315-453F-B0D8-FB518125F285}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42467A85-E315-453F-B0D8-FB518125F285}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
