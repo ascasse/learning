@@ -9,7 +9,7 @@ namespace MaterialAPI.Services
         private readonly MaterialAPIContext db;
 
         /// <summary>Max number of recently viewed categories to return.</summary>
-        public int RecentCount { get; set; } = 5;
+        public int RecentCount { get; set; } = 50;
         /// <summary>Date range to look for recently viewed categories or words, in days.</summary>
         public int RecentDays { get; set; } = 7;
         /// <summary>Max number of elements returned in a batch.</summary>
