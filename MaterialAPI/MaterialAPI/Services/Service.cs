@@ -8,12 +8,16 @@ namespace MaterialAPI.Services
     {
         private readonly MaterialAPIContext db;
 
-        /// <summary>Max number of recently viewed categories to return.</summary>
-        public int RecentCount { get; set; } = 50;
-        /// <summary>Date range to look for recently viewed categories or words, in days.</summary>
-        public int RecentDays { get; set; } = 7;
+        private static int recentDays = 7;
+        private static int batchSize = 10;
+        private static int batchCount = 5;
+
+        /// <summary>Max number of recently viewed categories to return.</summarbatchCount >
+        public int RecentCount { get; set; } = batchCount;
+        /// <summary>Date range to look for recently viewed categories or words, in daysrecentDays</summary>
+        public int RecentDays { get; set; } = recentDays;
         /// <summary>Max number of elements returned in a batch.</summary>
-        public int BatchSize { get; set; } = 10;
+        public int BatchSize { get; set; } = batchSize;
         /// <summary>Max times a given element is included in a batch.</summary>
         public int MaxViews { get; set; } = 5;
         /// <summary>Number of elements replaced when a batch is updated.</summary>
@@ -57,9 +61,24 @@ namespace MaterialAPI.Services
                     c.LastUse == DateTime.MinValue ||
                     c.LastUse == null)
                 .OrderByDescending(c => c.LastUse).Take(RecentCount).AsEnumerable();
-            List<Category> recent = new List<Category>();
+            List<Category> recent = new();
             foreach (var category in categories)
                 recent.Add(BuildBatchFromCategory(category));
+
+            return recent;
+        }
+
+        public List<Category> GetRecent(int batches = 5, int bits = 10, int days = 7)
+        {
+            DateTime recent_day = DateTime.Now.AddDays(-days);
+            IEnumerable<Category> categories = db.Categories.Include("Items")
+                .Where(c => c.LastUse > recent_day ||
+                    c.LastUse == DateTime.MinValue ||
+                    c.LastUse == null)
+                .OrderByDescending(c => c.LastUse).Take(batches).AsEnumerable();
+            List<Category> recent = new();
+            foreach (var category in categories)
+                recent.Add(BuildBatchFromCategory(category, bits));
 
             return recent;
         }
@@ -72,7 +91,7 @@ namespace MaterialAPI.Services
             return BuildBatchFromCategory(category);
         }
 
-        public Category BuildBatchFromCategory(Category category)
+        public Category BuildBatchFromCategory(Category category, int size = 10)
         {
             if (category.Items == null)
                 return category;
@@ -88,7 +107,7 @@ namespace MaterialAPI.Services
 
             // Category has fewer or equal number of elements than batch size. 
             // The batch will be the category itself. Nothing to do.
-            if (category.Items.Count <= BatchSize)
+            if (category.Items.Count <= size)
                 return category;
 
             var sorted_words = category.Items.OrderByDescending(word => word.Views).ThenByDescending(word => word.LastUse);
@@ -96,14 +115,14 @@ namespace MaterialAPI.Services
             // If no element has reached max_views, take the first BatchSize elements
             if (sorted_words.First().Views < MaxViews)
             {
-                batch.Items = sorted_words.Take(BatchSize).ToList();
+                batch.Items = sorted_words.Take(size).ToList();
                 return batch;
             }
 
             if (to_view.Count() <= RefreshRate)
-                batch.Items = sorted_words.Skip(Math.Max(0, sorted_words.Count() - BatchSize)).ToList();
+                batch.Items = sorted_words.Skip(Math.Max(0, sorted_words.Count() - size)).ToList();
             else
-                batch.Items = sorted_words.Skip(Math.Max(0, sorted_words.Count() - to_view.Count() - (BatchSize - RefreshRate))).Take(BatchSize).ToList();
+                batch.Items = sorted_words.Skip(Math.Max(0, sorted_words.Count() - to_view.Count() - (size - RefreshRate))).Take(size).ToList();
 
             return batch;
         }
@@ -146,6 +165,12 @@ namespace MaterialAPI.Services
             return Path.Combine(basePath, item.Image);
             //return "c:\\background\\1920x1080\\tren.jpg";
             //return item != null ? item.Image : string.Empty;
+        }
+
+        public String GetThumbnailPath(int id)
+        {
+            string imagePath = GetFilePath(id);
+            return imagePath.Replace("bits", @"thumbnails");
         }
     }
 }
