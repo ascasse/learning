@@ -162,6 +162,8 @@ namespace MaterialAPI.Services
 
             var item = db.Items.Find(id);
             if (item == null || item.Image == null) return string.Empty;
+            if (!Path.Exists(Path.Combine(basePath, item.Image)))
+                item.Image = "contemplative - reptile.jpg";
             return Path.Combine(basePath, item.Image);
             //return "c:\\background\\1920x1080\\tren.jpg";
             //return item != null ? item.Image : string.Empty;

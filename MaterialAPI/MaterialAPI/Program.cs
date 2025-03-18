@@ -6,6 +6,7 @@ using MaterialAPI.Services;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<MaterialAPIContext>(options =>
@@ -15,6 +16,10 @@ builder.Services.AddDbContext<MaterialAPIContext>(options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+//builder.Host.ConfigureDefaults(args).ConfigureWebHostDefaults(webBuilder =>
+//{
+//    webBuilder.UseUrls("http://localhost:5003", "https://localhost:5004");
+//});
 //JsonSerializerOptions options = new(JsonSerializerDefaults.Web)
 //{
 //    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -48,6 +53,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 app.UseStaticFiles(new StaticFileOptions
 {
