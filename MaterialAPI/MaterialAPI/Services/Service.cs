@@ -158,7 +158,7 @@ namespace MaterialAPI.Services
 
         public string GetFilePath(int id)
         {
-            string basePath = @"e:\material\bits";
+            string basePath = @"c:\material\bits";
 
             var item = db.Items.Find(id);
             if (item == null || item.Image == null) return string.Empty;
